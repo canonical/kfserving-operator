@@ -1,0 +1,22 @@
+name: kfserving
+display-name: KFServing
+summary: Serverless Inferencing on Kubernetes
+description: |
+  KFServing aims to solve production model serving use cases by providing
+  performant, high abstraction interfaces for common ML frameworks like
+  Tensorflow, XGBoost, ScikitLearn, PyTorch, and ONNX.
+maintainers:
+  - "Dominik Fleischmann <dominik.fleischmann@canonical.com>"
+  - "Kenneth Koski <kenneth.koski@canonical.com>"
+tags: [ai, big-data, kubeflow, machine-learning, tensorflow]
+series: [kubernetes]
+resources:
+  oci-image:
+    type: oci-image
+    description: Backing OCI image
+    auto-fetch: true
+    upstream-source: gcr.io/kfserving/kfserving-controller:v0.5.1
+provides:
+  kfserving:
+    interface: kfserving
+min-juju-version: 2.8.6

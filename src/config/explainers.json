@@ -1,0 +1,14 @@
+{
+    "alibi": {
+        "image": "kfserving/alibi-explainer",
+        "defaultImageVersion": "v0.5.1"
+    },
+    "aix": {
+        "image": "kfserving/aix-explainer",
+        "defaultImageVersion": "v0.5.1"
+    },
+    "art": {
+        "image": "kfserving/art-explainer",
+        "defaultImageVersion": "v0.5.1"
+    }
+}
