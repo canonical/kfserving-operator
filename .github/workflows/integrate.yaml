@@ -15,7 +15,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install python3-setuptools
+        sudo apt-get install python3-pip
         sudo pip3 install black flake8
 
     - name: Check black
@@ -67,13 +67,22 @@ jobs:
       run: |
         set -eux
         kubectl apply -nci-test -f examples/flower.yaml
+        sleep 10
         kubectl wait -nci-test --for=condition=available deployment --all --timeout=5m
-        ADDRESS=$(juju status --format yaml | yq e .applications.kfserving.address)
+        ADDRESS=$(kubectl get pods -nci-test -lcomponent=predictor -oyaml | yq e .items.0.status.podIP -)
 
-        curl -v -d @examples/flower_input.json \
+        curl -v \
+          -d @examples/flower_input.json \
           -H "Content-Type: application/json" \
-          -X POST \
           http://$ADDRESS:8080/v1/models/my-model:predict
+
+    - name: Describe flower deployment
+      run: kubectl describe deployments -n ci-test -lcomponent=predictor
+      if: failure()
+
+    - name: Describe flower replicaset
+      run: kubectl describe replicasets -n ci-test -lcomponent=predictor
+      if: failure()
 
     - name: Get all
       run: kubectl get all -A

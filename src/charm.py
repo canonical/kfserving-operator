@@ -132,6 +132,7 @@ class Operator(CharmBase):
                 ],
             }
         ]
+
         validating = [
             {
                 "name": "inferenceservice.serving.kubeflow.org",
