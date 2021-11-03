@@ -441,7 +441,7 @@ class Operator(CharmBase):
                         {
                             "name": "kfserving-webhook-server-service",
                             "spec": {
-                                "selector": {"juju-app": "kfserving"},
+                                "selector": {"app.kubernetes.io/name": "kfserving"},
                                 "ports": [
                                     {
                                         "protocol": "TCP",
