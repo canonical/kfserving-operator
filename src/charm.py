@@ -106,10 +106,7 @@ class Operator(CharmBase):
                         "name": "inferenceservice.kfserving-webhook-server.pod-mutator",
                         "namespaceSelector": {
                             "matchExpressions": [
-                                {
-                                    "key": "control-plane",
-                                    "operator": "DoesNotExist",
-                                }
+                                {"key": "control-plane", "operator": "DoesNotExist"}
                             ]
                         },
                         "objectSelector": {
@@ -400,9 +397,7 @@ class Operator(CharmBase):
                     {
                         "name": "manager",
                         "command": ["/manager"],
-                        "args": [
-                            "--metrics-addr=127.0.0.1:8080",
-                        ],
+                        "args": ["--metrics-addr=127.0.0.1:8080"],
                         "imageDetails": image_details,
                         "ports": [
                             {
@@ -420,14 +415,8 @@ class Operator(CharmBase):
                                 "name": "certs",
                                 "mountPath": "/tmp/k8s-webhook-server/serving-certs",
                                 "files": [
-                                    {
-                                        "path": "tls.crt",
-                                        "content": self._stored.cert,
-                                    },
-                                    {
-                                        "path": "tls.key",
-                                        "content": self._stored.key,
-                                    },
+                                    {"path": "tls.crt", "content": self._stored.cert},
+                                    {"path": "tls.key", "content": self._stored.key},
                                 ],
                             }
                         ],
