@@ -36,9 +36,9 @@ async def test_build_and_deploy(ops_test):
     log.info(f"charm {charm_under_test} status is {charm_status}")
     assert charm_status == "active"
 
-
+@pytest.mark.skip(reason="version of knative doesn't work with kfserving to allow flower deployment")
 async def test_flower_predictor(ops_test: OpsTest, lightkube_client):
-    log.info("ERROR: Test not yet implemented")
+    pass
     # TODO: implement this test once kfserving charm and knative work properly
     # test to reproduce with pytest:
     # set -eux
@@ -51,13 +51,3 @@ async def test_flower_predictor(ops_test: OpsTest, lightkube_client):
     #   -d @examples/flower_input.json \
     #   -H "Content-Type: application/json" \
     #   http://$ADDRESS:8080/v1/models/my-model:predict
-
-
-# Helpers
-@pytest.fixture(scope="session")
-def lightkube_client() -> lightkube.Client:
-    client = lightkube.Client()
-    create_global_resource(
-        group="kubeflow.org", version="v1", kind="Profile", plural="profiles"
-    )
-    return client
