@@ -40,12 +40,9 @@ jobs:
           channel: 1.19
 
     - name: Install Latest Charmcraft
-      run: |
-        set -eux
-        sudo snap install charmcraft --classic
-        sudo snap refresh charmcraft --channel=latest/candidate
+      run: sudo snap refresh charmcraft --channel latest/candidate
 
-    - name: Enable Microk8s AddOn Knative 
+    - name: Enable Microk8s AddOn Knative
       run: |
         set -eux
         sg microk8s -c "microk8s enable knative"
@@ -57,7 +54,7 @@ jobs:
 
     - name: Deploy and Test Charm
       run: |
-        sg microk8s -c "tox -e integration -- --model testing"
+        tox -e integration -- --model testing
 
     - name: Describe flower deployment
       run: kubectl describe deployments -n testing -lcomponent=predictor
@@ -82,4 +79,3 @@ jobs:
     - name: Get operator logs
       run: kubectl logs --tail 100 -n testing -ljuju-operator
       if: failure()
-

@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo snap install charm --classic
-        sudo pip3 install charmcraft==latest
+        sudo snap refresh charmcraft --channel=latest/candidate
         sudo snap install yq
 
     - name: Publish bundle
@@ -40,6 +40,3 @@ jobs:
             --channel edge \
             --resource oci-image-$OCI_VERSION \
             $CS_URL-$REVISION
-
-
-
