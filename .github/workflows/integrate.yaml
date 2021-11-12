@@ -73,9 +73,9 @@ jobs:
       if: failure()
 
     - name: Get workload logs
-      run: kubectl logs --tail 100 -n testing -ljuju-app
+      run: kubectl logs --tail 100 -n testing -l app.kubernetes.io/name
       if: failure()
 
     - name: Get operator logs
-      run: kubectl logs --tail 100 -n testing -ljuju-operator
+      run: kubectl logs --tail 100 -n testing -l operator.juju.is/name
       if: failure()

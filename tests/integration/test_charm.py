@@ -4,8 +4,6 @@ from pathlib import Path
 import pytest
 import yaml
 from pytest_operator.plugin import OpsTest
-import lightkube
-from lightkube.generic_resource import create_global_resource
 
 log = logging.getLogger(__name__)
 
