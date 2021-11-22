@@ -24,64 +24,44 @@ jobs:
     - name: Check flake8
       run: flake8
 
-  test:
-    name: Test
+  deploy:
+    name: Integration Test
     runs-on: ubuntu-latest
 
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
 
-    - uses: balchua/microk8s-actions@v0.2.2
+      # TODO update with main actions-operator once Aggelos PR is merged
+    - name: Setup operator environment
+      uses: neoaggelos/actions-operator@attempt-fix-microk8s-1.19-issue
       with:
-        addons: '["dns", "storage", "rbac"]'
+          provider: microk8s
+          channel: 1.19
 
-    - name: Install dependencies
+    - name: Install Latest Charmcraft
+      run: sudo snap refresh charmcraft --channel latest/candidate
+
+    - name: Enable Microk8s AddOn Knative
       run: |
         set -eux
-        sudo pip3 install charmcraft
-        sudo snap install juju --classic
-        sudo snap install juju-wait --classic
-        sudo snap install yq
+        sg microk8s -c "microk8s enable knative"
 
-    - name: Install KNative
+    # TODO: Remove once the actions-operator does this automatically
+    - name: Configure kubectl
       run: |
-        set -eux
-        sudo microk8s enable knative
+        sg microk8s -c "microk8s config > ~/.kube/config"
 
-    - name: Bootstrap Juju
+    - name: Deploy and Test Charm
       run: |
-        set -eux
-        sg microk8s -c 'juju bootstrap microk8s uk8s'
-        juju add-model ci-test
-
-    - name: Deploy charm
-      run: |
-        set -eux
-        charmcraft build
-        juju deploy ./*.charm \
-          --resource oci-image=$(yq eval '.resources.oci-image.upstream-source' metadata.yaml)
-        juju wait -wvt 300
-
-    - name: Test charm
-      run: |
-        set -eux
-        kubectl apply -nci-test -f examples/flower.yaml
-        sleep 10
-        kubectl wait -nci-test --for=condition=available deployment --all --timeout=5m
-        ADDRESS=$(kubectl get pods -nci-test -lcomponent=predictor -oyaml | yq e .items.0.status.podIP -)
-
-        curl -v \
-          -d @examples/flower_input.json \
-          -H "Content-Type: application/json" \
-          http://$ADDRESS:8080/v1/models/my-model:predict
+        tox -e integration -- --model testing
 
     - name: Describe flower deployment
-      run: kubectl describe deployments -n ci-test -lcomponent=predictor
+      run: kubectl describe deployments -n testing -lcomponent=predictor
       if: failure()
 
     - name: Describe flower replicaset
-      run: kubectl describe replicasets -n ci-test -lcomponent=predictor
+      run: kubectl describe replicasets -n testing -lcomponent=predictor
       if: failure()
 
     - name: Get all
@@ -93,10 +73,9 @@ jobs:
       if: failure()
 
     - name: Get workload logs
-      run: kubectl logs --tail 100 -nci-test -ljuju-app
+      run: kubectl logs --tail 100 -n testing -l app.kubernetes.io/name
       if: failure()
 
     - name: Get operator logs
-      run: kubectl logs --tail 100 -nci-test -ljuju-operator
+      run: kubectl logs --tail 100 -n testing -l operator.juju.is/name
       if: failure()
-
