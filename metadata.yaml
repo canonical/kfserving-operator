@@ -1,5 +1,4 @@
 name: kfserving
-display-name: KFServing
 summary: Serverless Inferencing on Kubernetes
 description: |
   KFServing aims to solve production model serving use cases by providing
